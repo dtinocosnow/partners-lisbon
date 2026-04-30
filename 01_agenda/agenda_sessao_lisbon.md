@@ -2,10 +2,9 @@
 
 ---
 
-**Data:** [A definir]
 **Local:** Lisboa, Portugal
-**Horario:** 09:00 - 12:00 (3 horas)
-**Idioma:** Portugues (apresentacao) | Ingles (demonstracoes tecnicas)
+**Duracao:** 3 horas 
+
 
 ---
 
