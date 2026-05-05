@@ -3,8 +3,7 @@
 ---
 
 **Local:** Lisboa, Portugal
-**Duracao:** 3 horas 
-
+**Duracao:** 3 horas
 
 ---
 
@@ -26,19 +25,19 @@ Proporcionar aos nossos partners uma visao completa e pratica da plataforma Snow
 
 | Horario | Duracao | Sessao | Orador |
 |---------|---------|--------|--------|
-| 09:00 - 09:10 | 10 min | **Boas-vindas e Objetivos** | Pedro |
+| 10:00 - 10:10 | 10 min | **Boas-vindas e Objetivos** | Pedro Jose |
 | | | Apresentacoes, contexto do mercado portugues e objetivos da sessao | |
-| 09:10 - 09:40 | 30 min | **Visao Geral do Snowflake AI Data Cloud** | Pedro |
+| 10:10 - 10:40 | 30 min | **Visao Geral do Snowflake AI Data Cloud** | Pedro Jose |
 | | | Arquitetura (armazenamento, computacao, governanca, colaboracao), capacidades-chave da plataforma, posicionamento | |
-| 09:40 - 10:15 | 35 min | **Aprofundamento I: Fundamentos da Plataforma** | David |
+| 10:40 - 11:15 | 35 min | **Aprofundamento I: Fundamentos da Plataforma** | David Tinoco |
 | | | Snowsight, seguranca e governanca (RBAC, masking policies, row access), alavancas de desempenho e custo, ingestao de dados (Snowpipe, Dynamic Tables). **Demo ao vivo** | |
-| 10:15 - 10:25 | 10 min | **Intervalo** | |
-| 10:25 - 10:55 | 30 min | **Aprofundamento II: IA e Aplicacoes** | David |
-| | | Cortex AI (Analyst, Search, Agents, ML Functions), interoperabilidade aberta (Iceberg, Polaris, OpenFlow), aplicacoes e marketplace interno. **Demo ao vivo** | |
-| 10:55 - 11:25 | 30 min | **Laboratorio Pratico Guiado** | David |
+| 11:15 - 11:25 | 10 min | **Intervalo** | |
+| 11:25 - 11:55 | 30 min | **Aprofundamento II: IA e Aplicacoes** | David Tinoco |
+| | | Cortex AI (Analyst, Search, Agents, ML Functions), aplicacoes e marketplace interno. **Demo ao vivo** | |
+| 11:55 - 12:25 | 30 min | **Laboratorio Pratico Guiado** | David Tinoco |
 | | | Exercicio acompanhado: criar base de dados, carregar dados, transformar, aplicar governanca e utilizar uma funcao de IA Cortex | |
-| 11:25 - 11:30 | 5 min | **Pausa** | |
-| 11:30 - 12:00 | 30 min | **Conclusao e Percurso de Capacitacao** | Pedro + David |
+| 12:25 - 12:30 | 5 min | **Pausa** | |
+| 12:30 - 13:00 | 30 min | **Conclusao e Percurso de Capacitacao** | Frederic |
 | | | Recursos de aprendizagem, Snowflake University, certificacoes, proximos passos concretos para os proximos 30-60 dias, definicao de acoes GTM conjuntas | |
 
 ---
@@ -63,11 +62,14 @@ Proporcionar aos nossos partners uma visao completa e pratica da plataforma Snow
 
 ## Oradores
 
-**Pedro** - Snowflake
+**Pedro Jose** - Snowflake | [LinkedIn](https://www.linkedin.com/in/pjose/)
 Responsavel pela visao estrategica da plataforma e contexto de mercado.
 
-**David** - Snowflake
+**David Tinoco** - Snowflake | [LinkedIn](https://www.linkedin.com/in/dtinocoreyes/)
 Responsavel pelas demonstracoes tecnicas e laboratorio pratico.
+
+**Frederic Arendt** - Snowflake | [LinkedIn](https://www.linkedin.com/in/farendt/)
+Contexto estrategico e Go-To-Market conjunto com partners.
 
 ---
 
