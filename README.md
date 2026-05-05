@@ -9,7 +9,6 @@ Materiais para a sessao presencial de capacitacao tecnica de Partners em Lisboa,
 | **Duracao** | 3 horas |
 | **Local** | Lisboa, Portugal |
 | **Audiencia** | Data Analysts, Data Engineers, Architects |
-| **Idioma** | Portugues (apresentacao) / Ingles (demos e SQL) |
 
 ### Oradores
 
