@@ -61,7 +61,7 @@ FROM RAW.product_reviews r;
 
 -- AI Complete - Generate product description
 SELECT SNOWFLAKE.CORTEX.COMPLETE(
-    'snowflake-arctic',
+    'mistral-large2',
     'Write a compelling 2-sentence product description for a high-performance 15-inch laptop aimed at data professionals. Focus on speed and reliability.'
 ) AS generated_description;
 
