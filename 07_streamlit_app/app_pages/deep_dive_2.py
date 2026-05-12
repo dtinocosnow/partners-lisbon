@@ -9,7 +9,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 tab_cortex, tab_llm, tab_analyst, tab_search, tab_agents, tab_ml, tab_apps, tab_quiz = st.tabs(
-    ["Cortex AI", "LLM Functions", "Analyst", "Search", "Agents", "ML Functions", "Apps & Marketplace", "Quiz"]
+    ["Cortex AI", "LLM Functions", "Analyst", "Search", "Agents", "ML & Migration", "Apps", "Quiz"]
 )
 
 with tab_cortex:
@@ -21,6 +21,13 @@ with tab_cortex:
         with col:
             st.markdown(f'<div class="sf-card" style="border-top: 3px solid {color}; text-align: center; min-height: 130px;"><strong style="color: {color};">{title}</strong><br><span style="color: #8A999E; font-size: 0.85rem;">{desc}</span></div>', unsafe_allow_html=True)
     st.success(t("dd2_cortex_key"))
+
+    st.markdown("---")
+    st.markdown(t("fy27_cortex_stack_title"))
+    fs_cols = st.columns(5)
+    for col, (title, desc, color) in zip(fs_cols, t("fy27_cortex_stack_items")):
+        with col:
+            st.markdown(f'<div class="sf-card" style="border-top: 3px solid {color}; min-height: 140px;"><strong style="color: {color};">{title}</strong><br><span style="color: #8A999E; font-size: 0.8rem;">{desc}</span></div>', unsafe_allow_html=True)
 
 with tab_llm:
     st.markdown(t("dd2_llm_title"))
@@ -52,6 +59,24 @@ with tab_analyst:
     with c2:
         st.markdown(t("dd2_analyst_example"))
         st.code("CREATE SEMANTIC VIEW sv_sales_analytics\n  COMMENT = 'Sales analytics model'\n  TABLES (\n    o AS DB.SCHEMA.ORDERS\n      PRIMARY KEY (ORDER_ID)\n  )\n  METRICS (\n    total_revenue AS SUM(o.TOTAL_AMOUNT)\n      COMMENT 'Total sales revenue'\n  )\n  DIMENSIONS (\n    order_date AS o.ORDER_DATE\n      COMMENT 'Date of the order'\n  );", language="sql")
+
+    st.markdown("---")
+    st.markdown(t("dd2_semantic_title"))
+    st.markdown(f'<p class="sf-big-text">{t("dd2_semantic_intro")}</p>', unsafe_allow_html=True)
+    sem1, sem2 = st.columns(2)
+    with sem1:
+        st.markdown(f'<div class="sf-card" style="border-top:3px solid #27AE60; text-align:center;"><div style="font-weight:700; color:#27AE60;">{t("dd2_semantic_with")}</div><div style="font-size:2rem; font-weight:800; color:#27AE60;">~100%</div></div>', unsafe_allow_html=True)
+    with sem2:
+        st.markdown(f'<div class="sf-card" style="border-top:3px solid #E74C3C; text-align:center;"><div style="font-weight:700; color:#E74C3C;">{t("dd2_semantic_without")}</div><div style="font-size:2rem; font-weight:800; color:#E74C3C;">&lt;50%</div></div>', unsafe_allow_html=True)
+    st.info(t("dd2_semantic_accuracy"))
+
+    st.markdown(t("dd2_semantic_benefits_title"))
+    bc1, bc2, bc3 = st.columns(3)
+    for col, (title, desc) in zip([bc1, bc2, bc3], t("dd2_semantic_benefits")):
+        with col:
+            st.markdown(f'<div class="sf-card"><strong style="color:#11567F;">{title}</strong><br><span style="color:#8A999E; font-size:0.85rem;">{desc}</span></div>', unsafe_allow_html=True)
+
+    st.markdown(f'<div class="sf-card sf-card-accent" style="text-align:center;"><div style="font-size:2.5rem; font-weight:800; color:#29B5E8;">{t("dd2_semantic_stat_val")}</div><div style="font-weight:600; color:#11567F;">{t("dd2_semantic_stat_label")}</div><div style="color:#8A999E; font-size:0.85rem;">{t("dd2_semantic_stat_detail")}</div></div>', unsafe_allow_html=True)
 
 with tab_search:
     st.markdown(t("dd2_search_title"))
@@ -95,6 +120,15 @@ $$;""", language="sql")
     st.markdown(t("dd2_agents_tools_title"))
     st.markdown(t("dd2_agents_tools"))
 
+    st.markdown("---")
+    ag1, ag2 = st.columns(2)
+    with ag1:
+        st.markdown(t("fy27_intelligence_title"))
+        st.markdown(t("fy27_intelligence_desc"))
+    with ag2:
+        st.markdown(t("fy27_cortex_code_title"))
+        st.markdown(t("fy27_cortex_code_desc"))
+
 with tab_ml:
     st.markdown(t("dd2_ml_title"))
     c1, c2 = st.columns(2)
@@ -105,6 +139,46 @@ with tab_ml:
         st.markdown(t("dd2_ml_anomaly"))
         st.code("CREATE SNOWFLAKE.ML.ANOMALY_DETECTION detector (\n  INPUT_DATA => TABLE(training_data),\n  TIMESTAMP_COLNAME => 'DATA',\n  TARGET_COLNAME => 'VALOR'\n);\n\nCALL detector!DETECT_ANOMALIES(\n  INPUT_DATA => TABLE(new_data)\n);", language="sql")
     st.info(t("dd2_ml_info"))
+
+    st.markdown("---")
+    ml1, ml2 = st.columns(2)
+    with ml1:
+        st.markdown(t("fy27_ml_detail_title"))
+        st.markdown(t("fy27_ml_detail_desc"))
+        st.info(t("fy27_ml_case"))
+    with ml2:
+        st.markdown(t("fy27_trust_title"))
+        st.markdown(t("fy27_trust_desc"))
+        st.markdown(t("fy27_semantic_autopilot_title"))
+        st.markdown(t("fy27_semantic_autopilot_desc"))
+
+    st.markdown("---")
+    st.markdown(t("dd2_snowconvert_title"))
+    st.markdown(f'<p class="sf-big-text">{t("dd2_snowconvert_intro")}</p>', unsafe_allow_html=True)
+    sc_cols = st.columns(4)
+    sc_colors = ["#29B5E8", "#7D44CF", "#FF9F36", "#71D3DC"]
+    for col, (val, label), clr in zip(sc_cols, t("dd2_snowconvert_stats"), sc_colors):
+        with col:
+            st.markdown(f'<div class="sf-card" style="text-align:center; border-top:3px solid {clr};"><div style="font-size:1.5rem; font-weight:800; color:{clr};">{val}</div><div style="color:#8A999E; font-size:0.8rem;">{label}</div></div>', unsafe_allow_html=True)
+    st.caption(t("dd2_snowconvert_sources"))
+
+    st.markdown("---")
+    st.markdown(t("dd2_applied_title"))
+    st.markdown(f'<p class="sf-big-text">{t("dd2_applied_intro")}</p>', unsafe_allow_html=True)
+    ap_cols = st.columns(4)
+    ap_colors = ["#29B5E8", "#11567F", "#7D44CF", "#FF9F36"]
+    for col, (title, desc), clr in zip(ap_cols, t("dd2_applied_items"), ap_colors):
+        with col:
+            st.markdown(f'<div class="sf-card" style="border-top:3px solid {clr}; min-height:100px;"><strong style="color:{clr};">{title}</strong><br><span style="color:#8A999E; font-size:0.8rem;">{desc}</span></div>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown(t("dd2_interactive_title"))
+    st.markdown(f'<p class="sf-big-text">{t("dd2_interactive_intro")}</p>', unsafe_allow_html=True)
+    it_cols = st.columns(3)
+    it_colors = ["#29B5E8", "#7D44CF", "#FF9F36"]
+    for col, (title, desc), clr in zip(it_cols, t("dd2_interactive_cases"), it_colors):
+        with col:
+            st.markdown(f'<div class="sf-card" style="border-top:3px solid {clr};"><strong style="color:{clr};">{title}</strong><br><span style="color:#8A999E; font-size:0.85rem;">{desc}</span></div>', unsafe_allow_html=True)
 
 with tab_apps:
     st.markdown(t("dd2_apps_title"))

@@ -11,6 +11,14 @@ st.markdown(f"""
 tabs = st.tabs(t("dd1_tabs"))
 
 with tabs[0]:
+    st.markdown(t("dd1_aidc_title"))
+    st.markdown(f'<p class="sf-big-text">{t("dd1_aidc_intro")}</p>', unsafe_allow_html=True)
+    pillar_cols = st.columns(5)
+    for col, pillar in zip(pillar_cols, t("dd1_aidc_pillars")):
+        with col:
+            st.markdown(f'<div style="background:#EBF7FD; color:#11567F; text-align:center; padding:8px 4px; border-radius:8px; font-weight:700; font-size:0.85rem;">{pillar}</div>', unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+
     st.markdown(t("dd1_arch_title"))
     st.markdown(f'<p class="sf-big-text">{t("dd1_arch_intro")}</p>', unsafe_allow_html=True)
 
@@ -34,6 +42,19 @@ with tabs[0]:
 
     with st.expander(t("dd1_multicloud_title")):
         st.markdown(t("dd1_multicloud_desc"))
+
+    st.markdown("---")
+    st.markdown(t("dd1_migration_title"))
+    mg1, mg2, mg3 = st.columns(3)
+    for col, (val, label) in zip([mg1, mg2, mg3], t("dd1_migration_stats")):
+        with col:
+            st.markdown(f'<div class="sf-card" style="text-align:center;"><div style="font-size:1.8rem; font-weight:800; color:#29B5E8;">{val}</div><div style="color:#8A999E; font-size:0.85rem;">{label}</div></div>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown(t("dd1_lakehouse_title"))
+    st.markdown(f'<p class="sf-big-text">{t("dd1_lakehouse_intro")}</p>', unsafe_allow_html=True)
+    li = "".join(f"<li>{x}</li>" for x in t("dd1_lakehouse_features"))
+    st.markdown(f'<div class="sf-card sf-card-accent"><ul>{li}</ul></div>', unsafe_allow_html=True)
 
 with tabs[1]:
     st.markdown(t("dd1_sec_title"))
@@ -104,6 +125,28 @@ with tabs[2]:
     with cb:
         st.markdown(t("dd1_best_r"))
 
+    st.markdown("---")
+    st.markdown(t("dd1_perf_evo_title"))
+    evo_cols = st.columns(3)
+    colors = ["#29B5E8", "#7D44CF", "#FF9F36"]
+    for col, (year, name, desc), clr in zip(evo_cols, t("dd1_perf_evo_items"), colors):
+        with col:
+            st.markdown(f'<div class="sf-card" style="border-top:3px solid {clr}; text-align:center;"><div style="font-weight:800; color:{clr}; font-size:1.1rem;">{year}</div><div style="font-weight:600; color:#24323D;">{name}</div><div style="color:#8A999E; font-size:0.8rem;">{desc}</div></div>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    pf1, pf2 = st.columns(2)
+    with pf1:
+        st.markdown(t("fy27_gen2_title"))
+        st.markdown(t("fy27_gen2_desc"))
+        st.markdown(t("fy27_adaptive_title"))
+        st.markdown(t("fy27_adaptive_desc"))
+    with pf2:
+        st.markdown(t("fy27_iceberg_title"))
+        st.markdown(t("fy27_iceberg_desc"))
+        st.info(t("fy27_iceberg_case"))
+    st.markdown("---")
+    st.markdown(f'<div class="sf-card sf-card-accent">{t("fy27_interactive_detail")}</div>', unsafe_allow_html=True)
+
 with tabs[3]:
     st.markdown(t("dd1_ing_title"))
     st.dataframe(t("dd1_ing_data"), use_container_width=True)
@@ -116,6 +159,18 @@ CREATE PIPE my_pipe AUTO_INGEST = TRUE AS
   FILE_FORMAT = (TYPE = 'JSON');
 
 SELECT SYSTEM$PIPE_STATUS('my_pipe');""", language="sql")
+
+    st.markdown("---")
+    st.markdown(t("fy27_openflow_title"))
+    st.markdown(f'<p class="sf-big-text">{t("fy27_openflow_desc")}</p>', unsafe_allow_html=True)
+    st.markdown(t("fy27_snowpipe_stream_title"))
+    st.markdown(t("fy27_snowpipe_stream_desc"))
+    st.info(t("fy27_snowpipe_stream_case"))
+    st.markdown(t("fy27_snowpark_connect_title"))
+    st.markdown(t("fy27_snowpark_connect_desc"))
+    st.info(t("fy27_snowpark_connect_case"))
+    st.markdown(t("fy27_dbt_native_title"))
+    st.markdown(t("fy27_dbt_native_desc"))
 
 with tabs[4]:
     st.markdown(t("dd1_dt_title"))
@@ -140,6 +195,7 @@ AS
     with c3:
         st.metric(t("dd1_dt_m3"), "Lower" if st.session_state.get("lang") == "EN" else "Menor")
     st.markdown(t("dd1_dt_advantages"))
+    st.info(t("fy27_dt_case"))
 
 with tabs[5]:
     st.markdown(t("dd1_quiz_title"))
