@@ -98,9 +98,6 @@ Camada Gold (metricas de negocio prontas para dashboards):
 
 As tabelas fonte internas sao: SUPERNOVA_LAB.BRONZE.VENDAS, SUPERNOVA_LAB.BRONZE.PRODUTOS,
 SUPERNOVA_LAB.BRONZE.LOJAS e SUPERNOVA_LAB.BRONZE.CLIENTES.
-Para o modelo de inflacao, usa diretamente os dados do Marketplace:
-FINANCE__ECONOMICS.CYBERSYN.EUROPEAN_CENTRAL_BANK_TIMESERIES (filtrar por Portugal
-e indicadores de CPI alimentar) juntando com FINANCE__ECONOMICS.CYBERSYN.GEOGRAPHY_INDEX.
 O warehouse e SUPERNOVA_WH e o role e ACCOUNTADMIN.
 
 Depois de criar o projeto, faz deploy e executa para materializar todas as tabelas.
@@ -147,9 +144,6 @@ Fontes de dados (usa APENAS estas tabelas e colunas, nao inventes outras):
    RECEITA_TOTAL (number), QUANTIDADE_VENDIDA (number), MARGEM_LUCRO_PCT (number),
    RANKING (number)
 
-4. SUPERNOVA_LAB.GOLD.INFLACAO_VS_VENDAS
-   (esta tabela foi criada pelo dbt no passo anterior - consulta as colunas reais
-   com SELECT * LIMIT 1 antes de usar. Deve ter colunas de mes, indice CPI e receita)
 
 Layout e conteudo:
 1. Header com titulo "SuperNova" e subtitulo "Painel Estrategico" com estilo profissional
@@ -167,9 +161,7 @@ Layout e conteudo:
 5. Duas colunas:
    - Esquerda: grafico de barras com RECEITA_MENSAL por CATEGORIA
    - Direita: tabela com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, MARGEM_LUCRO_PCT)
-6. Seccao "Inflacao vs Vendas": grafico de linhas dual-axis com VALOR_INDICE (CPI) e RECEITA_MENSAL
-   ao longo do MES (usando dados de INFLACAO_VS_VENDAS, filtrar INDICADOR = 'CPI_Alimentos_Geral')
-7. Seccao final: tabela resumo por loja com NOME_LOJA, receita total, total transacoes, ticket medio
+6. Seccao final: tabela resumo por loja com NOME_LOJA, receita total, total transacoes, ticket medio
 
 Regras tecnicas importantes:
 - Usar get_active_session() para ligar ao Snowflake
@@ -207,7 +199,7 @@ que funcione como analista de vendas inteligente para o supermercado SuperNova.
 O agente deve ser capaz de:
 - Responder perguntas sobre vendas, receitas, KPIs e rankings de produtos
   (usando os dados de SUPERNOVA_LAB.GOLD: KPI_DIARIO, VENDAS_CATEGORIA_MENSAL,
-  TOP_PRODUTOS e INFLACAO_VS_VENDAS)
+  TOP_PRODUTOS )
 - Analisar a correlacao entre inflacao alimentar e vendas do supermercado
 - Pesquisar avaliacoes e comentarios de clientes sobre produtos
   (usando SUPERNOVA_LAB.BRONZE.REVIEWS_PRODUTOS, coluna COMENTARIO)
@@ -263,17 +255,11 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 │ - Clientes   │ - Clientes   │   Categoria  │                   │
 │ - Vendas     │   360        │ - Top        │   AI & ML:        │
 │ - Reviews    │              │   Produtos   │ - Semantic View   │
-│              │              │ - Inflacao   │ - Search Service  │
-│              │              │   vs Vendas  │ - Cortex Agent    │
+│              │              │              │ - Search Service  │
+│              │              │              │ - Cortex Agent    │
 └──────────────┴──────────────┴──────┬───────┴───────────────────┘
-                                     │
-                    ┌────────────────┘
-                    ▼
-       ┌──────────────────────────┐
-       │  FINANCE__ECONOMICS      │
-       │  (Snowflake Marketplace) │
-       │  CPI Portugal - ECB      │
-       └──────────────────────────┘
+
+      
 ```
 
 ### Tudo criado com 3 prompts no Cortex Code!
