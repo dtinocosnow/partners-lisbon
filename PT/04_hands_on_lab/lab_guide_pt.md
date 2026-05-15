@@ -99,6 +99,8 @@ O Cortex Code vai automaticamente:
 
 Vamos criar um painel executivo para a direcao do SuperNova visualizar os KPIs em tempo real — diretamente dentro do Snowflake.
 
+> **Importante:** Como o Cortex Code gera os modelos dbt dinamicamente, os nomes das colunas podem variar. O prompt abaixo instrui o Cortex Code a **descobrir primeiro** as colunas reais antes de escrever o codigo.
+
 ### 3a. Colar o seguinte prompt no Cortex Code
 
 ```
@@ -107,48 +109,38 @@ usando o warehouse SUPERNOVA_WH. A app deve ser desplegada como um objecto Strea
 Snowflake (usando CREATE STREAMLIT) para que apareca na seccao Projects > Streamlit Apps
 do Snowsight. Tudo num unico ficheiro streamlit_app.py.
 
+PASSO OBRIGATORIO ANTES DE ESCREVER CODIGO:
+Executa SELECT * FROM <tabela> LIMIT 5 nas seguintes 3 tabelas Gold para descobrir
+os nomes REAIS das colunas (podem variar porque foram geradas por dbt no passo anterior):
+- SUPERNOVA_LAB.GOLD.KPI_DIARIO (deve ter colunas de: data, loja, receita diaria, transacoes, ticket medio)
+- SUPERNOVA_LAB.GOLD.VENDAS_CATEGORIA_MENSAL (deve ter colunas de: mes, categoria, receita mensal, quantidade, numero vendas)
+- SUPERNOVA_LAB.GOLD.TOP_PRODUTOS (deve ter colunas de: produto, categoria, receita, quantidade, margem, ranking)
+Usa os nomes EXATOS que encontrares nos resultados. NAO assumes nomes fixos.
+
 A app deve ser o painel de comando do CEO da cadeia de supermercados SuperNova Portugal
-(12 lojas) com design profissional e executivo. Usa st.tabs para organizar o conteudo
-em 4 seccoes dentro da mesma pagina:
+(12 lojas) com design profissional. Usa st.tabs para organizar em 4 seccoes:
 
 TAB 1 - "Visao Geral":
-- Header com titulo "SuperNova Command Center" e subtitulo "Centro de Comando Executivo"
-  usando st.markdown com HTML inline e estilo profissional (gradiente azul)
+- Header com titulo "SuperNova Command Center" usando st.markdown com HTML e gradiente azul
 - Sidebar com filtro de periodo (selectbox: Ultimo mes, Ultimos 3 meses, Todo o periodo)
-  e filtro de loja (selectbox: "Todas as lojas" + lista de NOME_LOJA)
+  e filtro de loja (selectbox: "Todas as lojas" + lista de lojas)
 - Linha de 4 KPIs com st.metric: Receita Total, Ticket Medio, Total Transacoes, Lojas Ativas
 - Duas colunas: grafico de linhas (receita diaria ao longo do tempo) e barras (receita por loja)
 
 TAB 2 - "Analise de Categorias":
-- Grafico de barras com RECEITA_MENSAL por CATEGORIA
+- Grafico de barras com receita mensal por categoria
 - Tabela com evolucao mensal por categoria
 - Metricas resumo: categoria com mais receita, categoria com mais crescimento
 
 TAB 3 - "Top Produtos":
-- Tabela com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, QUANTIDADE_VENDIDA, MARGEM_LUCRO_PCT)
+- Tabela com Top 10 produtos (ranking, nome, categoria, receita, margem)
 - Grafico de barras com os top 10 por receita
 - Metricas: produto com melhor margem, produto mais vendido
 
 TAB 4 - "Desempenho por Loja":
-- Tabela resumo por loja: NOME_LOJA, receita total, total transacoes, ticket medio
+- Tabela resumo por loja: nome, receita total, total transacoes, ticket medio
 - Grafico de barras comparando receita por loja
-- Ranking visual das lojas
-
-Fontes de dados (usa APENAS estas tabelas e colunas, nao inventes outras):
-
-1. SUPERNOVA_LAB.GOLD.KPI_DIARIO
-   Colunas: DATA_VENDA (date), LOJA_ID (number), NOME_LOJA (text),
-   RECEITA_DIARIA (number), NUMERO_TRANSACOES (number), TICKET_MEDIO (number)
-
-2. SUPERNOVA_LAB.GOLD.VENDAS_CATEGORIA_MENSAL
-   Colunas: MES (date), CATEGORIA (text), RECEITA_MENSAL (number),
-   QUANTIDADE_TOTAL (number), NUMERO_VENDAS (number)
-
-3. SUPERNOVA_LAB.GOLD.TOP_PRODUTOS
-   Colunas: PRODUTO_ID (number), NOME_PRODUTO (text), CATEGORIA (text),
-   TOTAL_VENDAS (number), QUANTIDADE_VENDIDA (number), RECEITA_TOTAL (number),
-   CUSTO_TOTAL (number), LUCRO_BRUTO (number), MARGEM_LUCRO_PCT (number),
-   RANKING (number)
+- Ranking visual das lojas com barras de progresso em HTML
 
 Regras tecnicas CRITICAS:
 - Usar get_active_session() para ligar ao Snowflake (NAO usar st.connection)
@@ -159,14 +151,13 @@ Regras tecnicas CRITICAS:
 - NAO usar icones :material/ (nao e compativel com SiS)
 - NAO usar horizontal=True em st.bar_chart (nao e compativel com SiS)
 - NAO usar st.navigation nem st.Page (nao e compativel com SiS warehouse mode)
-- NAO inventar colunas que nao existem nas tabelas acima
-- Antes de escrever codigo, faz SELECT * LIMIT 1 em cada tabela para confirmar colunas reais
-- Usar cores Snowflake (#29B5E8, #11567F, #7D44CF, #FF9F36) e formatacao com st.markdown HTML
+- Tratar valores NaN/None antes de converter para int (usar fillna(0))
+- Usar cores Snowflake (#29B5E8, #11567F, #7D44CF, #FF9F36) e st.markdown HTML para estilo
 ```
 
 ### 3b. O que acontece
 
-O Cortex Code cria a aplicacao Streamlit diretamente no Snowflake como um objecto. Depois de criada:
+O Cortex Code primeiro inspecciona as tabelas Gold para descobrir as colunas reais, e depois cria a aplicacao Streamlit. Depois de criada:
 
 1. Ir a **Projects > Streamlit** no Snowsight
 2. Abrir **SuperNova_Command_Center**
@@ -186,12 +177,20 @@ O passo final: criar um assistente inteligente que a equipa de gestao pode usar 
 Cria um Cortex Agent chamado ANALISTA_SUPERNOVA na base SUPERNOVA_LAB schema GOLD
 que funcione como analista de vendas inteligente para o supermercado SuperNova.
 
+PASSO OBRIGATORIO ANTES DE CRIAR O AGENT:
+Executa SELECT * FROM <tabela> LIMIT 5 nas seguintes tabelas para descobrir
+os nomes REAIS das colunas (podem variar porque foram geradas por dbt):
+- SUPERNOVA_LAB.GOLD.KPI_DIARIO
+- SUPERNOVA_LAB.GOLD.VENDAS_CATEGORIA_MENSAL
+- SUPERNOVA_LAB.GOLD.TOP_PRODUTOS
+- SUPERNOVA_LAB.BRONZE.REVIEWS_PRODUTOS
+Usa os nomes EXATOS que encontrares para criar a Semantic View e o Search Service.
+
 O agente deve ser capaz de:
 - Responder perguntas sobre vendas, receitas, KPIs e rankings de produtos
-  (usando os dados de SUPERNOVA_LAB.GOLD: KPI_DIARIO, VENDAS_CATEGORIA_MENSAL,
-  TOP_PRODUTOS )
+  (usando os dados das tabelas GOLD que descobriste acima)
 - Pesquisar avaliacoes e comentarios de clientes sobre produtos
-  (usando SUPERNOVA_LAB.BRONZE.REVIEWS_PRODUTOS, coluna COMENTARIO)
+  (usando SUPERNOVA_LAB.BRONZE.REVIEWS_PRODUTOS, coluna de comentarios/texto)
 - Gerar graficos quando relevante
 - Responder sempre em Portugues
 
@@ -285,16 +284,16 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 | "profiles.yml validation error" | Falta account/user | Pedir ao Cortex Code: "No profiles.yml coloca account: placeholder e user: placeholder" |
 | PASS=4 em vez de PASS=5 | Falta um modelo | Verificar que o prompt menciona os 5 modelos: VENDAS_ENRIQUECIDAS, CLIENTES_360, KPI_DIARIO, VENDAS_CATEGORIA_MENSAL, TOP_PRODUTOS |
 
-### Passo 3: Streamlit Super App
+### Passo 3: Streamlit Dashboard
 
 | Problema | Causa | Solucao |
 |----------|-------|---------|
-| KeyError: coluna nao existe (ex: CIDADE_LOJA) | Cortex Code inventou nomes de colunas | Dizer ao Cortex Code: "Corrige o erro: usa apenas as colunas listadas no prompt original" |
+| KeyError: coluna nao existe | Cortex Code nao inspeccionou as tabelas antes | Dizer ao Cortex Code: "Faz SELECT * LIMIT 5 em cada tabela Gold e adapta o codigo as colunas reais" |
+| ValueError: cannot convert NaN | Valores nulos nos dados | Dizer ao Cortex Code: "Adiciona .fillna(0) antes de converter para int" |
 | TypeError: hide_index | Versao SiS nao suporta este parametro | Dizer ao Cortex Code: "Remove hide_index de todos os st.dataframe" |
-| TypeError: unexpected argument 'horizontal' | st.bar_chart nao suporta horizontal nesta versao | Dizer ao Cortex Code: "Remove horizontal=True do bar_chart, usa barras verticais" |
-| st.container(border=True) erro | Versao SiS nao suporta este parametro | Dizer ao Cortex Code: "Remove border=True de st.container" |
-| App nao aparece em Projects > Streamlit | App criada noutro schema | Verificar se esta em SUPERNOVA_LAB.APPS |
-| Navegacao nao funciona | st.navigation nao disponivel | Pedir ao Cortex Code: "Usa st.sidebar.radio para navegacao entre paginas" |
+| TypeError: unexpected argument 'horizontal' | st.bar_chart nao suporta horizontal | Dizer ao Cortex Code: "Remove horizontal=True do bar_chart, usa barras verticais" |
+| st.container(border=True) erro | Versao SiS nao suporta | Dizer ao Cortex Code: "Remove border=True de st.container" |
+| App nao aparece em Projects > Streamlit | App criada noutro schema ou nao desplegada | Verificar se esta em SUPERNOVA_LAB.APPS. Se nao, pedir: "Desplega a app com CREATE STREAMLIT" |
 
 ### Passo 4: Cortex Agent
 
