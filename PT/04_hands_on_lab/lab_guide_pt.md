@@ -125,7 +125,7 @@ TAB 2 - "Analise de Categorias":
 - Metricas resumo: categoria com mais receita, categoria com mais crescimento
 
 TAB 3 - "Top Produtos":
-- Tabela com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, MARGEM_LUCRO_PCT)
+- Tabela com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, QUANTIDADE_VENDIDA, MARGEM_LUCRO_PCT)
 - Grafico de barras com os top 10 por receita
 - Metricas: produto com melhor margem, produto mais vendido
 
@@ -146,7 +146,8 @@ Fontes de dados (usa APENAS estas tabelas e colunas, nao inventes outras):
 
 3. SUPERNOVA_LAB.GOLD.TOP_PRODUTOS
    Colunas: PRODUTO_ID (number), NOME_PRODUTO (text), CATEGORIA (text),
-   RECEITA_TOTAL (number), QUANTIDADE_VENDIDA (number), MARGEM_LUCRO_PCT (number),
+   TOTAL_VENDAS (number), QUANTIDADE_VENDIDA (number), RECEITA_TOTAL (number),
+   CUSTO_TOTAL (number), LUCRO_BRUTO (number), MARGEM_LUCRO_PCT (number),
    RANKING (number)
 
 Regras tecnicas CRITICAS:
