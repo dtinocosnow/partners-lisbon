@@ -95,40 +95,44 @@ O Cortex Code vai automaticamente:
 
 ---
 
-## Passo 3: Criar Super App Multi-Pagina com Streamlit (8 min)
+## Passo 3: Criar Dashboard Interativo com Streamlit (8 min)
 
-Vamos criar uma aplicacao profissional multi-pagina que serve como centro de comando para a direcao do SuperNova.
+Vamos criar um painel executivo para a direcao do SuperNova visualizar os KPIs em tempo real — diretamente dentro do Snowflake.
 
 ### 3a. Colar o seguinte prompt no Cortex Code
 
 ```
-Cria uma Streamlit app multi-pagina chamada SuperNova_Command_Center na base SUPERNOVA_LAB
-schema APPS usando o warehouse SUPERNOVA_WH. A app deve ser o centro de comando do CEO da
-cadeia de supermercados SuperNova Portugal (12 lojas) com design profissional e executivo.
+Cria uma Streamlit app chamada SuperNova_Command_Center na base SUPERNOVA_LAB schema APPS
+usando o warehouse SUPERNOVA_WH. A app deve ser desplegada como um objecto Streamlit in
+Snowflake (usando CREATE STREAMLIT) para que apareca na seccao Projects > Streamlit Apps
+do Snowsight. Tudo num unico ficheiro streamlit_app.py.
 
-A app deve ter navegacao por paginas na sidebar (usando st.navigation e st.Page) com 4 paginas:
+A app deve ser o painel de comando do CEO da cadeia de supermercados SuperNova Portugal
+(12 lojas) com design profissional e executivo. Usa st.tabs para organizar o conteudo
+em 4 seccoes dentro da mesma pagina:
 
-PAGINA 1 - "Visao Geral" (pagina principal):
+TAB 1 - "Visao Geral":
 - Header com titulo "SuperNova Command Center" e subtitulo "Centro de Comando Executivo"
+  usando st.markdown com HTML inline e estilo profissional (gradiente azul)
 - Sidebar com filtro de periodo (selectbox: Ultimo mes, Ultimos 3 meses, Todo o periodo)
   e filtro de loja (selectbox: "Todas as lojas" + lista de NOME_LOJA)
 - Linha de 4 KPIs com st.metric: Receita Total, Ticket Medio, Total Transacoes, Lojas Ativas
 - Duas colunas: grafico de linhas (receita diaria ao longo do tempo) e barras (receita por loja)
 
-PAGINA 2 - "Analise de Categorias":
+TAB 2 - "Analise de Categorias":
 - Grafico de barras com RECEITA_MENSAL por CATEGORIA
-- Tabela com evolucao mensal por categoria (pivot ou tabela detalhada)
+- Tabela com evolucao mensal por categoria
 - Metricas resumo: categoria com mais receita, categoria com mais crescimento
 
-PAGINA 3 - "Top Produtos":
-- Tabela interativa com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, MARGEM_LUCRO_PCT)
-- Grafico de barras horizontais com os top 10 por receita
+TAB 3 - "Top Produtos":
+- Tabela com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, MARGEM_LUCRO_PCT)
+- Grafico de barras com os top 10 por receita
 - Metricas: produto com melhor margem, produto mais vendido
 
-PAGINA 4 - "Desempenho por Loja":
+TAB 4 - "Desempenho por Loja":
 - Tabela resumo por loja: NOME_LOJA, receita total, total transacoes, ticket medio
 - Grafico de barras comparando receita por loja
-- Mapa de calor ou ranking visual das lojas
+- Ranking visual das lojas
 
 Fontes de dados (usa APENAS estas tabelas e colunas, nao inventes outras):
 
@@ -145,27 +149,29 @@ Fontes de dados (usa APENAS estas tabelas e colunas, nao inventes outras):
    RECEITA_TOTAL (number), QUANTIDADE_VENDIDA (number), MARGEM_LUCRO_PCT (number),
    RANKING (number)
 
-Regras tecnicas importantes:
-- Usar get_active_session() para ligar ao Snowflake
-- NAO usar hide_index em st.dataframe (nao e compativel)
-- NAO usar st.container(border=True) (nao e compativel)
-- NAO usar icones :material/ (nao e compativel)
-- NAO usar horizontal=True em st.bar_chart (nao e compativel)
+Regras tecnicas CRITICAS:
+- Usar get_active_session() para ligar ao Snowflake (NAO usar st.connection)
+- Tudo num UNICO ficheiro streamlit_app.py (sem ficheiros separados, sem pastas pages/)
+- Desplegar como objecto Streamlit in Snowflake com CREATE STREAMLIT
+- NAO usar hide_index em st.dataframe (nao e compativel com SiS)
+- NAO usar st.container(border=True) (nao e compativel com SiS)
+- NAO usar icones :material/ (nao e compativel com SiS)
+- NAO usar horizontal=True em st.bar_chart (nao e compativel com SiS)
+- NAO usar st.navigation nem st.Page (nao e compativel com SiS warehouse mode)
 - NAO inventar colunas que nao existem nas tabelas acima
-- Antes de escrever codigo, faz SELECT * LIMIT 1 em cada tabela para confirmar colunas
-- Usar cores e formatacao para dar aspeto profissional (st.markdown com HTML inline)
-- Cada pagina deve ser um ficheiro separado na pasta pages/
+- Antes de escrever codigo, faz SELECT * LIMIT 1 em cada tabela para confirmar colunas reais
+- Usar cores Snowflake (#29B5E8, #11567F, #7D44CF, #FF9F36) e formatacao com st.markdown HTML
 ```
 
 ### 3b. O que acontece
 
-O Cortex Code cria a aplicacao Streamlit multi-pagina diretamente no Snowflake. Depois de criada:
+O Cortex Code cria a aplicacao Streamlit diretamente no Snowflake como um objecto. Depois de criada:
 
 1. Ir a **Projects > Streamlit** no Snowsight
 2. Abrir **SuperNova_Command_Center**
-3. A app mostra 4 paginas navegaveis com metricas, graficos e tabelas em tempo real
+3. A app mostra 4 tabs com metricas, graficos e tabelas em tempo real
 
-> **Conceito-chave:** Uma super app multi-pagina criada em minutos com um simples prompt! Quatro paginas de analise interativa, dados ao vivo, governada pelas mesmas permissoes do Snowflake. Sem infraestrutura, sem deploy externo.
+> **Conceito-chave:** Uma app interativa criada em minutos com um simples prompt! Dados ao vivo, governada pelas mesmas permissoes do Snowflake. Sem infraestrutura, sem deploy externo — a app vive diretamente dentro do Snowflake.
 
 ---
 
