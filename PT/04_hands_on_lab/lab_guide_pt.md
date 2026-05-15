@@ -17,7 +17,7 @@ A **SuperNova** e uma cadeia de supermercados portuguesa com 12 lojas espalhadas
 |-------|--------------|------------|-------|
 | 1 | Carregar dados na camada Bronze | SQL Script | 5 min |
 | 2 | Criar camadas Silver e Gold | dbt Project (Cortex Code) | 8 min |
-| 3 | Criar dashboard interativo | Streamlit (Cortex Code) | 8 min |
+| 3 | Criar super app multi-pagina | Streamlit (Cortex Code) | 8 min |
 | 4 | Criar assistente de vendas | Cortex Agent (Cortex Code) | 9 min |
 
 ---
@@ -28,33 +28,12 @@ A **SuperNova** e uma cadeia de supermercados portuguesa com 12 lojas espalhadas
 - [ ] Sessao iniciada na vossa conta
 - [ ] Role **ACCOUNTADMIN** selecionado (canto inferior esquerdo)
 - [ ] **Cortex Code** aberto (aplicacao desktop)
-- [ ] Confirmar acesso ao Marketplace: **Data Products > Marketplace** (menu lateral)
 
 ---
 
-## Passo 1: Obter Dados do Marketplace + Carregar Bronze (5 min)
+## Passo 1: Carregar Dados na Camada Bronze (5 min)
 
-### 1a. Obter dados do Snowflake Marketplace
-
-Vamos obter dados **reais** de indicadores economicos para enriquecer a nossa analise.
-
-**Instrucoes passo a passo:**
-
-1. No menu lateral do Snowsight, clicar em **Data Products > Marketplace**
-2. Na barra de pesquisa, procurar: **"Financial & Economic Essentials"** (provider: Cybersyn)
-3. Clicar no listing **"Financial & Economic Essentials"**
-4. Clicar no botao **"Get"** (canto superior direito)
-5. No dialogo:
-   - **Database name:** manter `FINANCE__ECONOMICS` (ou o nome sugerido)
-   - **Roles:** selecionar `ACCOUNTADMIN`
-6. Clicar **"Get"**
-7. Aguardar confirmacao: "Database created successfully"
-
-> **O que acabamos de fazer?** Obtivemos dados reais do European Central Bank (ECB) sobre indices de precos ao consumidor em Portugal. Estes dados sao partilhados em tempo real - sem copias, sem ETL!
-
-**Nota:** Se ja tiverem este dataset na conta (verificar em Databases > FINANCE__ECONOMICS), podem saltar este sub-passo.
-
-### 1b. Executar o script de setup Bronze
+### 1a. Executar o script de setup Bronze
 
 1. Abrir uma **SQL Worksheet**: clicar `+` > SQL Worksheet
 2. Dar o nome: "SuperNova - Setup Bronze"
@@ -68,7 +47,7 @@ Vamos obter dados **reais** de indicadores economicos para enriquecer a nossa an
 |    12 |       42 |       20 |   3000 |      20 |
 ```
 
-> **Conceito-chave:** A camada Bronze contem dados internos em estado bruto. Os dados de inflacao (CPI) vem diretamente do Marketplace — no proximo passo, o dbt vai consumi-los sem qualquer copia!
+> **Conceito-chave:** A camada Bronze contem dados internos em estado bruto — os dados transacionais do supermercado que alimentam toda a plataforma analitica.
 
 ---
 
@@ -93,8 +72,6 @@ Camada Gold (metricas de negocio prontas para dashboards):
 - KPI_DIARIO: receita diaria, numero de transacoes e ticket medio por loja
 - VENDAS_CATEGORIA_MENSAL: receita mensal por categoria de produto
 - TOP_PRODUTOS: ranking dos produtos mais vendidos com margem de lucro
-- INFLACAO_VS_VENDAS: comparacao mensal entre o indice de inflacao alimentar (CPI)
-  e a receita mensal do supermercado, para analise de correlacao precos vs vendas
 
 As tabelas fonte internas sao: SUPERNOVA_LAB.BRONZE.VENDAS, SUPERNOVA_LAB.BRONZE.PRODUTOS,
 SUPERNOVA_LAB.BRONZE.LOJAS e SUPERNOVA_LAB.BRONZE.CLIENTES.
@@ -106,28 +83,52 @@ Depois de criar o projeto, faz deploy e executa para materializar todas as tabel
 ### 2b. O que acontece
 
 O Cortex Code vai automaticamente:
-1. Criar a estrutura do projeto dbt com os 6 modelos SQL
+1. Criar a estrutura do projeto dbt com os 5 modelos SQL
 2. Desplegar o projeto no Snowflake como objecto `DBT PROJECT`
 3. Executar os modelos para criar as tabelas Silver e Gold
 
-**Resultado esperado:** `PASS=6 WARN=0 ERROR=0`
+**Resultado esperado:** `PASS=5 WARN=0 ERROR=0`
 
-> **Conceito-chave:** Com um unico prompt em linguagem natural, criamos um pipeline de transformacao de dados completo — que consome diretamente dados do Marketplace sem copias! O dbt combina dados internos (Bronze) com dados externos (Marketplace) numa unica camada Gold.
+> **Conceito-chave:** Com um unico prompt em linguagem natural, criamos um pipeline de transformacao de dados completo com 5 modelos! O dbt organiza a transformacao de dados brutos (Bronze) em tabelas analiticas prontas para consumo (Silver e Gold).
 
-> **Nota:** Como o Cortex Code gera codigo dinamicamente, os nomes de colunas e a estrutura podem variar ligeiramente. Se o resultado nao for PASS=6, consultem a seccao de Troubleshooting no final desta guia.
+> **Nota:** Como o Cortex Code gera codigo dinamicamente, os nomes de colunas e a estrutura podem variar ligeiramente. Se o resultado nao for PASS=5, consultem a seccao de Troubleshooting no final desta guia.
 
 ---
 
-## Passo 3: Criar Dashboard Interativo com Streamlit (8 min)
+## Passo 3: Criar Super App Multi-Pagina com Streamlit (8 min)
 
-Vamos criar um painel executivo para a direcao do SuperNova visualizar os KPIs em tempo real.
+Vamos criar uma aplicacao profissional multi-pagina que serve como centro de comando para a direcao do SuperNova.
 
 ### 3a. Colar o seguinte prompt no Cortex Code
 
 ```
-Cria uma Streamlit app chamada SuperNova_CEO_Dashboard na base SUPERNOVA_LAB schema APPS
-usando o warehouse SUPERNOVA_WH. A app deve ser o painel diario do CEO da cadeia de
-supermercados SuperNova Portugal (12 lojas) com design profissional e executivo.
+Cria uma Streamlit app multi-pagina chamada SuperNova_Command_Center na base SUPERNOVA_LAB
+schema APPS usando o warehouse SUPERNOVA_WH. A app deve ser o centro de comando do CEO da
+cadeia de supermercados SuperNova Portugal (12 lojas) com design profissional e executivo.
+
+A app deve ter navegacao por paginas na sidebar (usando st.navigation e st.Page) com 4 paginas:
+
+PAGINA 1 - "Visao Geral" (pagina principal):
+- Header com titulo "SuperNova Command Center" e subtitulo "Centro de Comando Executivo"
+- Sidebar com filtro de periodo (selectbox: Ultimo mes, Ultimos 3 meses, Todo o periodo)
+  e filtro de loja (selectbox: "Todas as lojas" + lista de NOME_LOJA)
+- Linha de 4 KPIs com st.metric: Receita Total, Ticket Medio, Total Transacoes, Lojas Ativas
+- Duas colunas: grafico de linhas (receita diaria ao longo do tempo) e barras (receita por loja)
+
+PAGINA 2 - "Analise de Categorias":
+- Grafico de barras com RECEITA_MENSAL por CATEGORIA
+- Tabela com evolucao mensal por categoria (pivot ou tabela detalhada)
+- Metricas resumo: categoria com mais receita, categoria com mais crescimento
+
+PAGINA 3 - "Top Produtos":
+- Tabela interativa com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, MARGEM_LUCRO_PCT)
+- Grafico de barras horizontais com os top 10 por receita
+- Metricas: produto com melhor margem, produto mais vendido
+
+PAGINA 4 - "Desempenho por Loja":
+- Tabela resumo por loja: NOME_LOJA, receita total, total transacoes, ticket medio
+- Grafico de barras comparando receita por loja
+- Mapa de calor ou ranking visual das lojas
 
 Fontes de dados (usa APENAS estas tabelas e colunas, nao inventes outras):
 
@@ -144,25 +145,6 @@ Fontes de dados (usa APENAS estas tabelas e colunas, nao inventes outras):
    RECEITA_TOTAL (number), QUANTIDADE_VENDIDA (number), MARGEM_LUCRO_PCT (number),
    RANKING (number)
 
-
-Layout e conteudo:
-1. Header com titulo "SuperNova" e subtitulo "Painel Estrategico" com estilo profissional
-2. Sidebar com:
-   - Filtro de periodo (selectbox com opcoes: Ultimo mes, Ultimos 3 meses, Todo o periodo)
-   - Filtro de loja (selectbox com "Todas as lojas" + lista de NOME_LOJA)
-3. Linha de KPIs com 4 metricas usando st.metric com deltas comparativos:
-   - Receita Total (soma de RECEITA_DIARIA, comparar com periodo anterior)
-   - Ticket Medio (media de TICKET_MEDIO)
-   - Total Transacoes (soma de NUMERO_TRANSACOES)
-   - Numero de Lojas Ativas
-4. Duas colunas:
-   - Esquerda: grafico de linhas com evolucao da RECEITA_DIARIA ao longo de DATA_VENDA
-   - Direita: grafico de barras vertical com receita total por NOME_LOJA (ordenado desc)
-5. Duas colunas:
-   - Esquerda: grafico de barras com RECEITA_MENSAL por CATEGORIA
-   - Direita: tabela com Top 10 produtos (RANKING, NOME_PRODUTO, CATEGORIA, RECEITA_TOTAL, MARGEM_LUCRO_PCT)
-6. Seccao final: tabela resumo por loja com NOME_LOJA, receita total, total transacoes, ticket medio
-
 Regras tecnicas importantes:
 - Usar get_active_session() para ligar ao Snowflake
 - NAO usar hide_index em st.dataframe (nao e compativel)
@@ -172,17 +154,18 @@ Regras tecnicas importantes:
 - NAO inventar colunas que nao existem nas tabelas acima
 - Antes de escrever codigo, faz SELECT * LIMIT 1 em cada tabela para confirmar colunas
 - Usar cores e formatacao para dar aspeto profissional (st.markdown com HTML inline)
+- Cada pagina deve ser um ficheiro separado na pasta pages/
 ```
 
 ### 3b. O que acontece
 
-O Cortex Code cria a aplicacao Streamlit diretamente no Snowflake. Depois de criada:
+O Cortex Code cria a aplicacao Streamlit multi-pagina diretamente no Snowflake. Depois de criada:
 
 1. Ir a **Projects > Streamlit** no Snowsight
-2. Abrir **SuperNova_CEO_Dashboard**
-3. A app mostra metricas, graficos e tabelas em tempo real
+2. Abrir **SuperNova_Command_Center**
+3. A app mostra 4 paginas navegaveis com metricas, graficos e tabelas em tempo real
 
-> **Conceito-chave:** Uma app interativa criada em minutos com um simples prompt! Dados ao vivo, governada pelas mesmas permissoes do Snowflake. Sem infraestrutura, sem deploy externo.
+> **Conceito-chave:** Uma super app multi-pagina criada em minutos com um simples prompt! Quatro paginas de analise interativa, dados ao vivo, governada pelas mesmas permissoes do Snowflake. Sem infraestrutura, sem deploy externo.
 
 ---
 
@@ -200,7 +183,6 @@ O agente deve ser capaz de:
 - Responder perguntas sobre vendas, receitas, KPIs e rankings de produtos
   (usando os dados de SUPERNOVA_LAB.GOLD: KPI_DIARIO, VENDAS_CATEGORIA_MENSAL,
   TOP_PRODUTOS )
-- Analisar a correlacao entre inflacao alimentar e vendas do supermercado
 - Pesquisar avaliacoes e comentarios de clientes sobre produtos
   (usando SUPERNOVA_LAB.BRONZE.REVIEWS_PRODUTOS, coluna COMENTARIO)
 - Gerar graficos quando relevante
@@ -226,7 +208,6 @@ Depois de criado:
 | "O que dizem os clientes sobre o bacalhau?" | Pesquisa nas reviews (Cortex Search) |
 | "Top 5 produtos por vendas" | Gera tabela com ranking |
 | "Mostra a receita por mes num grafico" | Gera visualizacao |
-| "A inflacao afetou as nossas vendas?" | Analisa correlacao CPI vs receita |
 | "Quais produtos tem piores avaliacoes?" | Pesquisa reviews com rating baixo |
 
 > **Conceito-chave:** O Agent decide sozinho qual ferramenta usar! Utilizadores de negocio fazem perguntas em linguagem natural — sem SQL, sem codigo, sem complexidade.
@@ -237,9 +218,9 @@ Depois de criado:
 
 Completaram o laboratorio com sucesso. Em 30 minutos:
 
-- **Integraram** dados reais do Snowflake Marketplace (ECB CPI Portugal)
+- **Carregaram** dados transacionais na camada Bronze
 - **Construiram** uma arquitetura medallion (Bronze > Silver > Gold) com dbt Projects on Snowflake via Cortex Code
-- **Criaram** um dashboard interativo com Streamlit in Snowflake
+- **Criaram** uma super app multi-pagina com Streamlit in Snowflake
 - **Implementaram** um assistente inteligente com Cortex Agent
 
 ### Arquitetura Final
@@ -251,10 +232,11 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 │    BRONZE    │    SILVER    │     GOLD     │       APPS        │
 │              │              │              │                   │
 │ - Lojas      │ - Vendas     │ - KPI_Diario │ - Streamlit App   │
-│ - Produtos   │   Enriquecidas│ - Vendas    │ - dbt Project     │
-│ - Clientes   │ - Clientes   │   Categoria  │                   │
-│ - Vendas     │   360        │ - Top        │   AI & ML:        │
-│ - Reviews    │              │   Produtos   │ - Semantic View   │
+│ - Produtos   │   Enriquecidas│ - Vendas    │   (4 paginas)     │
+│ - Clientes   │ - Clientes   │   Categoria  │ - dbt Project     │
+│ - Vendas     │   360        │ - Top        │                   │
+│ - Reviews    │              │   Produtos   │   AI & ML:        │
+│              │              │              │ - Semantic View   │
 │              │              │              │ - Search Service  │
 │              │              │              │ - Cortex Agent    │
 └──────────────┴──────────────┴──────┬───────┴───────────────────┘
@@ -266,8 +248,8 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 
 | Prompt | Resultado |
 |--------|-----------|
-| Prompt 1 | Projeto dbt com 6 modelos (Silver + Gold + Marketplace) |
-| Prompt 2 | Dashboard Streamlit interativo com analise de inflacao |
+| Prompt 1 | Projeto dbt com 5 modelos (Silver + Gold) |
+| Prompt 2 | Super app Streamlit multi-pagina (4 paginas) |
 | Prompt 3 | Agente inteligente de vendas |
 
 ### Proximos passos recomendados
@@ -285,7 +267,6 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 
 | Problema | Causa | Solucao |
 |----------|-------|---------|
-| "Database FINANCE__ECONOMICS does not exist" | Marketplace nao foi instalado | Voltar ao passo 1a e instalar "Financial & Economic Essentials" |
 | "Run All" so mostra um resultado | Snowsight mostra apenas o ultimo resultado | Normal — verificar que mostra 12/42/20/3000/20 |
 | Numeros diferentes de 3000 em VENDAS | Dados sao gerados aleatoriamente | Normal — o importante e que haja ~3000 rows |
 
@@ -294,11 +275,10 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 | Problema | Causa | Solucao |
 |----------|-------|---------|
 | Cortex Code cria schemas SILVER_SILVER / GOLD_GOLD | Falta macro generate_schema_name | Pedir ao Cortex Code: "Adiciona um macro generate_schema_name que use custom_schema_name diretamente sem prefixo" |
-| ERROR no modelo inflacao_vs_vendas | Falta acesso ao Marketplace | Verificar que FINANCE__ECONOMICS existe e o role tem IMPORTED PRIVILEGES |
 | "profiles.yml validation error" | Falta account/user | Pedir ao Cortex Code: "No profiles.yml coloca account: placeholder e user: placeholder" |
-| PASS=5 em vez de PASS=6 | Falta modelo inflacao | Verificar que o prompt menciona INFLACAO_VS_VENDAS e FINANCE__ECONOMICS |
+| PASS=4 em vez de PASS=5 | Falta um modelo | Verificar que o prompt menciona os 5 modelos: VENDAS_ENRIQUECIDAS, CLIENTES_360, KPI_DIARIO, VENDAS_CATEGORIA_MENSAL, TOP_PRODUTOS |
 
-### Passo 3: Streamlit Dashboard
+### Passo 3: Streamlit Super App
 
 | Problema | Causa | Solucao |
 |----------|-------|---------|
@@ -306,15 +286,14 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 | TypeError: hide_index | Versao SiS nao suporta este parametro | Dizer ao Cortex Code: "Remove hide_index de todos os st.dataframe" |
 | TypeError: unexpected argument 'horizontal' | st.bar_chart nao suporta horizontal nesta versao | Dizer ao Cortex Code: "Remove horizontal=True do bar_chart, usa barras verticais" |
 | st.container(border=True) erro | Versao SiS nao suporta este parametro | Dizer ao Cortex Code: "Remove border=True de st.container" |
-| Colunas INFLACAO_VS_VENDAS diferentes do prompt | dbt gerou nomes diferentes | Dizer ao Cortex Code: "Faz SELECT * FROM SUPERNOVA_LAB.GOLD.INFLACAO_VS_VENDAS LIMIT 1 e adapta o codigo" |
 | App nao aparece em Projects > Streamlit | App criada noutro schema | Verificar se esta em SUPERNOVA_LAB.APPS |
+| Navegacao nao funciona | st.navigation nao disponivel | Pedir ao Cortex Code: "Usa st.sidebar.radio para navegacao entre paginas" |
 
 ### Passo 4: Cortex Agent
 
 | Problema | Causa | Solucao |
 |----------|-------|---------|
 | Semantic View erro de sintaxe | Sintaxe complexa | Pedir ao Cortex Code para recriar. Verificar: DIMENSIONS antes de METRICS |
-| Agent nao responde sobre inflacao | Semantic View nao inclui INFLACAO_VS_VENDAS | Pedir ao Cortex Code: "Adiciona a tabela INFLACAO_VS_VENDAS a Semantic View" |
 | Search nao encontra reviews | Cortex Search ainda a indexar | Aguardar 1-2 minutos apos criacao |
 | "Agent not found" no Snowsight | Pode estar noutro schema | Verificar em AI & ML > Agents, filtrar por SUPERNOVA_LAB.GOLD |
 
