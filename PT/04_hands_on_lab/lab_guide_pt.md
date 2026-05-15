@@ -152,6 +152,10 @@ Regras tecnicas CRITICAS:
 - NAO usar horizontal=True em st.bar_chart (nao e compativel com SiS)
 - NAO usar st.navigation nem st.Page (nao e compativel com SiS warehouse mode)
 - Tratar valores NaN/None antes de converter para int (usar fillna(0))
+- NAO usar st.column_config (nao e compativel com SiS warehouse mode)
+- NAO usar st.cache_data com ttl (pode nao funcionar em SiS — usar @st.cache_data sem ttl)
+- O filtro de periodo "Ultimo mes" deve calcular-se em relacao a DATA MAXIMA dos dados
+  (nao em relacao a hoje, porque os dados de vendas sao de Jan-Jun 2025)
 - Usar cores Snowflake (#29B5E8, #11567F, #7D44CF, #FF9F36) e st.markdown HTML para estilo
 ```
 
@@ -290,6 +294,8 @@ Completaram o laboratorio com sucesso. Em 30 minutos:
 |----------|-------|---------|
 | KeyError: coluna nao existe | Cortex Code nao inspeccionou as tabelas antes | Dizer ao Cortex Code: "Faz SELECT * LIMIT 5 em cada tabela Gold e adapta o codigo as colunas reais" |
 | ValueError: cannot convert NaN | Valores nulos nos dados | Dizer ao Cortex Code: "Adiciona .fillna(0) antes de converter para int" |
+| AttributeError: column_config | st.column_config nao existe em SiS | Dizer ao Cortex Code: "Remove todo o uso de st.column_config, usa st.dataframe simples" |
+| KPIs mostram 0.00 ou vazios | Filtro "Ultimo mes" calcula em relacao a hoje | Dizer ao Cortex Code: "O filtro deve usar a data maxima dos dados, nao datetime.now()" |
 | TypeError: hide_index | Versao SiS nao suporta este parametro | Dizer ao Cortex Code: "Remove hide_index de todos os st.dataframe" |
 | TypeError: unexpected argument 'horizontal' | st.bar_chart nao suporta horizontal | Dizer ao Cortex Code: "Remove horizontal=True do bar_chart, usa barras verticais" |
 | st.container(border=True) erro | Versao SiS nao suporta | Dizer ao Cortex Code: "Remove border=True de st.container" |
